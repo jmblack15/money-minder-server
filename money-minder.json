@@ -1,0 +1,70 @@
+{
+  "user": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "user": {
+      "id": 1,
+      "nombre": "Juan Perez",
+      "email": "juan.perez@example.com"
+    }
+  },
+  "accounts": {
+    "user_id": 1,
+    "cuentas": [
+      {
+        "id": 1,
+        "nombre": "Cuenta Ahorro",
+        "tipo": "ahorro",
+        "balance_actual": 4950.00,
+        "moneda": "USD"
+      },
+      {
+        "id": 2,
+        "nombre": "Cuenta Corriente",
+        "tipo": "corriente",
+        "balance_actual": 2000.00,
+        "moneda": "USD"
+      }
+    ]
+  },
+  "category": {
+    "user_id": 1,
+    "categoria_id": 1,
+    "transacciones": [
+      {
+        "id": 1,
+        "cuenta_id": 1,
+        "monto": 50.00,
+        "tipo": "gasto",
+        "descripcion": "Compra de alimentos",
+        "fecha": "2024-06-10T13:00:00Z"
+      },
+      {
+        "id": 2,
+        "cuenta_id": 1,
+        "monto": 20.00,
+        "tipo": "gasto",
+        "descripcion": "Cena fuera",
+        "fecha": "2024-06-09T19:30:00Z"
+      }
+    ]
+  },
+  "transaction": {
+    "id": 1,
+    "user_id": 1,
+    "cuenta_id": 1,
+    "categoria_id": 1,
+    "monto": 50.00,
+    "tipo": "gasto",
+    "descripcion": "Compra de alimentos",
+    "fecha": "2024-06-10T13:00:00Z"
+  },
+  "budget": {
+    "id": 1,
+    "user_id": 1,
+    "categoria_id": 1,
+    "monto": 300.00,
+    "periodo": "mensual",
+    "fecha_inicio": "2024-06-01T00:00:00Z",
+    "fecha_fin": "2024-06-30T23:59:59Z"
+  }
+}
