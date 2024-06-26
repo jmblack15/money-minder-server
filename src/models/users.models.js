@@ -22,9 +22,8 @@ const UsersModel = () => {
       "INSERT INTO Users (name, email, password) VALUES ($1 , $2, $3) RETURNING *",
       [name, email, password]
     )
-
     client.release()
-    return res[0]
+    return res.rows[0]
   }
 
   return {

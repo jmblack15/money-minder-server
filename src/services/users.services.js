@@ -4,13 +4,6 @@ const UserService = () => {
   const userModel = UsersModel()
 
   const createUser = async (newUser) => {
-
-    const { email } = newUser;
-    const userFound = await userModel.findUserByEmail(email)
-    if (userFound) {
-      return false
-    }
-
     return userModel.createUser(newUser)
   }
 

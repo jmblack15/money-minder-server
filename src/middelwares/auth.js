@@ -8,7 +8,8 @@ const pathsNoAuth = [
   {
     path: '/users',
     method: 'POST',
-  }
+  },
+
 ]
 
 const authenticateJWT = passport.authenticate('jwt', { session: false })
