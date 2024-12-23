@@ -1,0 +1,20 @@
+[
+    {
+      "id": "1",
+      "name": "Juan Pérez",
+      "email": "juan.perez@ejemplo.com",
+      "password": "$2b$10$w7lQGyRzE8gk2K/f9HvM6OJIXMJPG.EQr4vqO3pDRjJIBzW.V7Tje", 
+      "role": "user", 
+      "createdAt": "2024-12-01T10:30:00Z",
+      "updatedAt": "2024-12-15T15:20:00Z"
+    },
+    {
+      "id": "2",
+      "name": "María Gómez",
+      "email": "maria.gomez@ejemplo.com",
+      "password": "$2b$10$wTlkOw5Vt8k2K.qe7T49Ye5IXJHMGG.Ek5vqK1pAGjIV5jO.V8Tof", 
+      "role": "admin", 
+      "createdAt": "2024-11-10T12:00:00Z",
+      "updatedAt": "2024-12-10T17:00:00Z"
+    }
+  ]
