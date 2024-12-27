@@ -1,15 +1,13 @@
-import { Router } from "express"
-import { UsersController } from "../controllers/users.js"
-
+import { Router } from "express";
+import { UsersController } from "../controllers/users.js";
 
 const UsersRoutes = () => {
+  const usersController = UsersController();
+  const router = Router();
 
-  const usersController = UsersController()
-  const router = Router()
+  router.post("/", usersController.createUser);
 
-  router.post('/', usersController.createUser)
+  return router;
+};
 
-  return router
-}
-
-export { UsersRoutes }
+export { UsersRoutes };
