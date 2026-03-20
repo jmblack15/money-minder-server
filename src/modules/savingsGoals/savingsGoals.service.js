@@ -1,4 +1,4 @@
-const prisma = require('../../config/prisma');
+import prisma from '../../config/prisma.js';
 
 function assertOwnership(goal, userId) {
   if (!goal || goal.userId !== userId) {
@@ -15,7 +15,7 @@ function addProgress(goal) {
   return { ...goal, progressPercent: progress };
 }
 
-async function getGoals(userId) {
+export async function getGoals(userId) {
   const goals = await prisma.savingsGoal.findMany({
     where: { userId },
     orderBy: { createdAt: 'asc' },
@@ -23,22 +23,22 @@ async function getGoals(userId) {
   return goals.map(addProgress);
 }
 
-async function getGoalById(id, userId) {
+export async function getGoalById(id, userId) {
   const goal = await prisma.savingsGoal.findUnique({ where: { id } });
   assertOwnership(goal, userId);
   return addProgress(goal);
 }
 
-async function createGoal(userId, data) {
+export async function createGoal(userId, data) {
   const goal = await prisma.savingsGoal.create({ data: { ...data, userId } });
   return addProgress(goal);
 }
 
-async function updateGoal(id, userId, data) {
+export async function updateGoal(id, userId, data) {
   const goal = await prisma.savingsGoal.findUnique({ where: { id } });
   assertOwnership(goal, userId);
 
-  // Si current_amount alcanza target_amount, marcar como COMPLETED automáticamente
+  // If current_amount reaches target_amount, automatically mark as COMPLETED
   const newCurrent = data.currentAmount ?? Number(goal.currentAmount);
   const newTarget  = data.targetAmount  ?? Number(goal.targetAmount);
   const autoStatus = newCurrent >= newTarget ? 'COMPLETED' : undefined;
@@ -54,10 +54,8 @@ async function updateGoal(id, userId, data) {
   return addProgress(updated);
 }
 
-async function deleteGoal(id, userId) {
+export async function deleteGoal(id, userId) {
   const goal = await prisma.savingsGoal.findUnique({ where: { id } });
   assertOwnership(goal, userId);
   await prisma.savingsGoal.delete({ where: { id } });
 }
-
-module.exports = { getGoals, getGoalById, createGoal, updateGoal, deleteGoal };

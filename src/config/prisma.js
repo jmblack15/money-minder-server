@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 
-// Singleton para evitar múltiples conexiones en desarrollo (hot-reload)
+// Singleton to avoid multiple connections in development (hot-reload)
 const prisma = global.__prisma || new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['query', 'warn', 'error'] : ['error'],
 });
@@ -9,4 +9,4 @@ if (process.env.NODE_ENV === 'development') {
   global.__prisma = prisma;
 }
 
-module.exports = prisma;
+export default prisma;

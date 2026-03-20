@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const controller = require('./transactions.controller');
-const validate = require('../../middleware/validate');
-const { createTransactionSchema, updateTransactionSchema } = require('./transactions.validation');
+import { Router } from 'express';
+import * as controller from './transactions.controller.js';
+import validate from '../../middleware/validate.js';
+import { createTransactionSchema, updateTransactionSchema } from './transactions.validation.js';
 
 const router = Router();
 
@@ -11,4 +11,4 @@ router.post('/',    validate(createTransactionSchema), controller.createTransact
 router.put('/:id',  validate(updateTransactionSchema), controller.updateTransaction);
 router.delete('/:id', controller.deleteTransaction);
 
-module.exports = router;
+export default router;

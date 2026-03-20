@@ -1,4 +1,4 @@
-const prisma = require('../../config/prisma');
+import prisma from '../../config/prisma.js';
 
 function assertOwnership(budget, userId) {
   if (!budget || budget.userId !== userId) {
@@ -9,7 +9,7 @@ function assertOwnership(budget, userId) {
 }
 
 /**
- * Calcula las fechas de inicio y fin del período actual del presupuesto.
+ * Calculates the start and end dates of the budget's current period.
  */
 function getPeriodRange(period, startDate) {
   const now = new Date();
@@ -19,9 +19,9 @@ function getPeriodRange(period, startDate) {
     periodStart = new Date(now.getFullYear(), now.getMonth(), 1);
     periodEnd   = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
   } else {
-    // WEEKLY: semana que contiene hoy
-    const day = now.getDay(); // 0=Dom
-    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // lunes
+    // WEEKLY: week containing today
+    const day = now.getDay(); // 0=Sun
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // Monday
     periodStart = new Date(now.setDate(diff));
     periodStart.setHours(0, 0, 0, 0);
     periodEnd = new Date(periodStart);
@@ -29,14 +29,14 @@ function getPeriodRange(period, startDate) {
     periodEnd.setHours(23, 59, 59, 999);
   }
 
-  // No puede empezar antes que startDate del budget
+  // Cannot start before the budget's startDate
   if (periodStart < startDate) periodStart = startDate;
 
   return { periodStart, periodEnd };
 }
 
 /**
- * Suma lo gastado en la categoría del budget durante el período actual.
+ * Sums spending in the budget's category during the current period.
  */
 async function computeSpent(budget) {
   const { periodStart, periodEnd } = getPeriodRange(budget.period, budget.startDate);
@@ -66,7 +66,7 @@ async function computeSpent(budget) {
   };
 }
 
-async function getBudgets(userId) {
+export async function getBudgets(userId) {
   const budgets = await prisma.budget.findMany({
     where: { userId },
     include: { category: { select: { id: true, name: true, icon: true, color: true } } },
@@ -78,7 +78,7 @@ async function getBudgets(userId) {
   );
 }
 
-async function getBudgetById(id, userId) {
+export async function getBudgetById(id, userId) {
   const budget = await prisma.budget.findUnique({
     where: { id },
     include: { category: { select: { id: true, name: true, icon: true, color: true } } },
@@ -87,23 +87,21 @@ async function getBudgetById(id, userId) {
   return { ...budget, spending: await computeSpent(budget) };
 }
 
-async function createBudget(userId, data) {
+export async function createBudget(userId, data) {
   return prisma.budget.create({
     data: { ...data, userId },
     include: { category: true },
   });
 }
 
-async function updateBudget(id, userId, data) {
+export async function updateBudget(id, userId, data) {
   const budget = await prisma.budget.findUnique({ where: { id } });
   assertOwnership(budget, userId);
   return prisma.budget.update({ where: { id }, data, include: { category: true } });
 }
 
-async function deleteBudget(id, userId) {
+export async function deleteBudget(id, userId) {
   const budget = await prisma.budget.findUnique({ where: { id } });
   assertOwnership(budget, userId);
   await prisma.budget.delete({ where: { id } });
 }
-
-module.exports = { getBudgets, getBudgetById, createBudget, updateBudget, deleteBudget };

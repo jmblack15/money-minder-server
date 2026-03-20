@@ -1,31 +1,31 @@
-require('./config/env'); // Valida variables de entorno al arrancar
+import './config/env.js'; // Validates environment variables on startup
 
-const express = require('express');
-const helmet  = require('helmet');
-const cors    = require('cors');
-const morgan  = require('morgan');
-const rateLimit = require('express-rate-limit');
+import express from 'express';
+import helmet  from 'helmet';
+import cors    from 'cors';
+import morgan  from 'morgan';
+import rateLimit from 'express-rate-limit';
 
-const errorHandler = require('./middleware/errorHandler');
-const authMiddleware = require('./middleware/authMiddleware');
+import errorHandler  from './middleware/errorHandler.js';
+import authMiddleware from './middleware/authMiddleware.js';
 
-// ── Rutas ────────────────────────────────────────────────────────────────────
-const authRoutes         = require('./modules/auth/auth.routes');
-const accountsRoutes     = require('./modules/accounts/accounts.routes');
-const categoriesRoutes   = require('./modules/categories/categories.routes');
-const transactionsRoutes = require('./modules/transactions/transactions.routes');
-const budgetsRoutes      = require('./modules/budgets/budgets.routes');
-const savingsRoutes      = require('./modules/savingsGoals/savingsGoals.routes');
-const reportsRoutes      = require('./modules/reports/reports.routes');
+// ── Routes ────────────────────────────────────────────────────────────────────
+import authRoutes         from './modules/auth/auth.routes.js';
+import accountsRoutes     from './modules/accounts/accounts.routes.js';
+import categoriesRoutes   from './modules/categories/categories.routes.js';
+import transactionsRoutes from './modules/transactions/transactions.routes.js';
+import budgetsRoutes      from './modules/budgets/budgets.routes.js';
+import savingsRoutes      from './modules/savingsGoals/savingsGoals.routes.js';
+import reportsRoutes      from './modules/reports/reports.routes.js';
 
-const { PORT, NODE_ENV } = require('./config/env');
+import { PORT, NODE_ENV } from './config/env.js';
 
 const app = express();
 
-// ── Seguridad y utilidades globales ──────────────────────────────────────────
+// ── Security and global utilities ─────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: '*', // En producción, restringir a dominios específicos
+  origin: '*', // In production, restrict to specific domains
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -33,7 +33,7 @@ app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting global: 200 req/15min por IP
+// Global rate limiting: 200 req/15min per IP
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -42,22 +42,22 @@ app.use(rateLimit({
   message: { success: false, message: 'Demasiadas solicitudes. Intenta de nuevo más tarde.' },
 }));
 
-// Rate limiting estricto para auth: 20 req/15min por IP
+// Strict rate limiting for auth: 20 req/15min per IP
 app.use('/api/auth', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   message: { success: false, message: 'Demasiados intentos de autenticación.' },
 }));
 
-// ── Health check ─────────────────────────────────────────────────────────────
+// ── Health check ──────────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
   res.json({ success: true, message: 'Money Minder API is running', timestamp: new Date() });
 });
 
-// ── Rutas públicas ───────────────────────────────────────────────────────────
+// ── Public routes ─────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 
-// ── Rutas protegidas (requieren JWT) ─────────────────────────────────────────
+// ── Protected routes (require JWT) ────────────────────────────────────────────
 app.use('/api/accounts',     authMiddleware, accountsRoutes);
 app.use('/api/categories',   authMiddleware, categoriesRoutes);
 app.use('/api/transactions', authMiddleware, transactionsRoutes);
@@ -70,13 +70,13 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: `Ruta ${req.method} ${req.path} no encontrada` });
 });
 
-// ── Error handler global (debe ser el último middleware) ─────────────────────
+// ── Global error handler (must be the last middleware) ────────────────────────
 app.use(errorHandler);
 
-// ── Start ─────────────────────────────────────────────────────────────────────
+// ── Start ──────────────────────────────────────────────────────────────────────
 app.listen(PORT, () => {
   console.log(`🚀 Money Minder API corriendo en http://localhost:${PORT}`);
   console.log(`🌍 Entorno: ${NODE_ENV}`);
 });
 
-module.exports = app; // para testing
+export default app; // for testing

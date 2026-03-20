@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const controller = require('./budgets.controller');
-const validate = require('../../middleware/validate');
-const { createBudgetSchema, updateBudgetSchema } = require('./budgets.validation');
+import { Router } from 'express';
+import * as controller from './budgets.controller.js';
+import validate from '../../middleware/validate.js';
+import { createBudgetSchema, updateBudgetSchema } from './budgets.validation.js';
 
 const router = Router();
 
@@ -11,4 +11,4 @@ router.post('/',    validate(createBudgetSchema), controller.createBudget);
 router.put('/:id',  validate(updateBudgetSchema), controller.updateBudget);
 router.delete('/:id', controller.deleteBudget);
 
-module.exports = router;
+export default router;

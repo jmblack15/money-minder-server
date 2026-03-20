@@ -1,5 +1,5 @@
-const { Router } = require('express');
-const controller = require('./reports.controller');
+import { Router } from 'express';
+import * as controller from './reports.controller.js';
 
 const router = Router();
 
@@ -8,4 +8,4 @@ router.get('/by-category',      controller.byCategory);
 router.get('/monthly-trend',    controller.monthlyTrend);
 router.get('/account-balances', controller.accountBalances);
 
-module.exports = router;
+export default router;

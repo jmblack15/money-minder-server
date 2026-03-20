@@ -1,4 +1,4 @@
-const prisma = require('../../config/prisma');
+import prisma from '../../config/prisma.js';
 
 function assertUserOwnership(category, userId) {
   if (!category) {
@@ -13,28 +13,26 @@ function assertUserOwnership(category, userId) {
   }
 }
 
-async function getCategories(userId) {
-  // Retorna categorías globales (userId = null) + las del usuario
+export async function getCategories(userId) {
+  // Returns global categories (userId = null) + user's categories
   return prisma.category.findMany({
     where: { OR: [{ userId: null }, { userId }] },
     orderBy: [{ userId: 'asc' }, { name: 'asc' }],
   });
 }
 
-async function createCategory(userId, data) {
+export async function createCategory(userId, data) {
   return prisma.category.create({ data: { ...data, userId } });
 }
 
-async function updateCategory(id, userId, data) {
+export async function updateCategory(id, userId, data) {
   const category = await prisma.category.findUnique({ where: { id } });
   assertUserOwnership(category, userId);
   return prisma.category.update({ where: { id }, data });
 }
 
-async function deleteCategory(id, userId) {
+export async function deleteCategory(id, userId) {
   const category = await prisma.category.findUnique({ where: { id } });
   assertUserOwnership(category, userId);
   await prisma.category.delete({ where: { id } });
 }
-
-module.exports = { getCategories, createCategory, updateCategory, deleteCategory };

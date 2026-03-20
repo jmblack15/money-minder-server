@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const controller = require('./savingsGoals.controller');
-const validate = require('../../middleware/validate');
-const { createGoalSchema, updateGoalSchema } = require('./savingsGoals.validation');
+import { Router } from 'express';
+import * as controller from './savingsGoals.controller.js';
+import validate from '../../middleware/validate.js';
+import { createGoalSchema, updateGoalSchema } from './savingsGoals.validation.js';
 
 const router = Router();
 
@@ -11,4 +11,4 @@ router.post('/',    validate(createGoalSchema), controller.createGoal);
 router.put('/:id',  validate(updateGoalSchema), controller.updateGoal);
 router.delete('/:id', controller.deleteGoal);
 
-module.exports = router;
+export default router;

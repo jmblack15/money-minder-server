@@ -1,7 +1,7 @@
-const { Router } = require('express');
-const controller = require('./categories.controller');
-const validate = require('../../middleware/validate');
-const { createCategorySchema, updateCategorySchema } = require('./categories.validation');
+import { Router } from 'express';
+import * as controller from './categories.controller.js';
+import validate from '../../middleware/validate.js';
+import { createCategorySchema, updateCategorySchema } from './categories.validation.js';
 
 const router = Router();
 
@@ -10,4 +10,4 @@ router.post('/',    validate(createCategorySchema), controller.createCategory);
 router.put('/:id',  validate(updateCategorySchema), controller.updateCategory);
 router.delete('/:id', controller.deleteCategory);
 
-module.exports = router;
+export default router;

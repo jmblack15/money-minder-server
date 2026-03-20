@@ -1,11 +1,11 @@
-const { z } = require('zod');
+import { z } from 'zod';
 
 const transactionTypeEnum = z.enum(['INCOME', 'EXPENSE', 'TRANSFER']);
 
-const createTransactionSchema = z.object({
+export const createTransactionSchema = z.object({
   accountId: z.string().uuid('accountId debe ser UUID'),
   categoryId: z.string().uuid('categoryId debe ser UUID'),
-  toAccountId: z.string().uuid().optional(), // solo para TRANSFER
+  toAccountId: z.string().uuid().optional(), // only for TRANSFER
   amount: z.number().positive('El monto debe ser positivo'),
   type: transactionTypeEnum,
   description: z.string().min(1).max(200),
@@ -16,7 +16,7 @@ const createTransactionSchema = z.object({
   { message: 'toAccountId es requerido para transferencias', path: ['toAccountId'] }
 );
 
-const updateTransactionSchema = z.object({
+export const updateTransactionSchema = z.object({
   accountId: z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
   toAccountId: z.string().uuid().optional(),
@@ -27,7 +27,7 @@ const updateTransactionSchema = z.object({
   notes: z.string().max(500).optional(),
 });
 
-const listTransactionsSchema = z.object({
+export const listTransactionsSchema = z.object({
   accountId:  z.string().uuid().optional(),
   categoryId: z.string().uuid().optional(),
   type:       transactionTypeEnum.optional(),
@@ -36,5 +36,3 @@ const listTransactionsSchema = z.object({
   limit:      z.coerce.number().int().min(1).max(100).default(20),
   offset:     z.coerce.number().int().min(0).default(0),
 });
-
-module.exports = { createTransactionSchema, updateTransactionSchema, listTransactionsSchema };

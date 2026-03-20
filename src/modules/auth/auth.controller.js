@@ -1,6 +1,6 @@
-const authService = require('./auth.service');
+import * as authService from './auth.service.js';
 
-async function register(req, res, next) {
+export async function register(req, res, next) {
   try {
     const { user, accessToken, refreshToken } = await authService.register(req.body);
     res.status(201).json({
@@ -13,7 +13,7 @@ async function register(req, res, next) {
   }
 }
 
-async function login(req, res, next) {
+export async function login(req, res, next) {
   try {
     const { user, accessToken, refreshToken } = await authService.login(req.body);
     res.json({
@@ -26,7 +26,7 @@ async function login(req, res, next) {
   }
 }
 
-async function refresh(req, res, next) {
+export async function refresh(req, res, next) {
   try {
     const { accessToken } = await authService.refreshAccessToken(req.body.refreshToken);
     res.json({
@@ -39,7 +39,7 @@ async function refresh(req, res, next) {
   }
 }
 
-async function logout(req, res, next) {
+export async function logout(req, res, next) {
   try {
     await authService.logout(req.token, req.user.id);
     res.json({
@@ -51,5 +51,3 @@ async function logout(req, res, next) {
     next(err);
   }
 }
-
-module.exports = { register, login, refresh, logout };

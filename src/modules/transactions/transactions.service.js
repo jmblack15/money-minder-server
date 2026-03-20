@@ -1,4 +1,4 @@
-const prisma = require('../../config/prisma');
+import prisma from '../../config/prisma.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -16,10 +16,10 @@ function assertOwnership(transaction, userId) {
 }
 
 /**
- * Calcula el delta de balance que produce un movimiento sobre una cuenta.
- * INCOME  → +amount en accountId
- * EXPENSE → -amount en accountId
- * TRANSFER → -amount en accountId, +amount en toAccountId
+ * Calculates the balance delta that a movement produces on an account.
+ * INCOME  → +amount on accountId
+ * EXPENSE → -amount on accountId
+ * TRANSFER → -amount on accountId, +amount on toAccountId
  */
 function getBalanceDeltas(type, amount, accountId, toAccountId) {
   const ops = [];
@@ -46,11 +46,11 @@ async function assertAccountBelongsToUser(accountId, userId) {
 
 // ─── Service functions ────────────────────────────────────────────────────────
 
-async function getTransactions(userId, filters) {
+export async function getTransactions(userId, filters) {
   const { accountId, categoryId, type, dateFrom, dateTo, limit, offset } = filters;
 
   const where = {
-    account: { userId }, // asegura que solo vea sus transacciones
+    account: { userId }, // ensures user only sees their transactions
     ...(accountId  && { accountId }),
     ...(categoryId && { categoryId }),
     ...(type       && { type }),
@@ -76,7 +76,7 @@ async function getTransactions(userId, filters) {
   return { transactions, total, limit, offset };
 }
 
-async function getTransactionById(id, userId) {
+export async function getTransactionById(id, userId) {
   const transaction = await prisma.transaction.findUnique({
     where: { id },
     include: { account: true, category: true },
@@ -86,26 +86,26 @@ async function getTransactionById(id, userId) {
 }
 
 /**
- * Crea una transacción y actualiza los balances de cuenta en una sola
- * transacción de base de datos para garantizar consistencia.
+ * Creates a transaction and updates account balances in a single
+ * database transaction to guarantee consistency.
  */
-async function createTransaction(userId, data) {
+export async function createTransaction(userId, data) {
   const { accountId, categoryId, toAccountId, amount, type, description, date, notes } = data;
 
-  // Validar ownership de cuentas
+  // Validate account ownership
   await assertAccountBelongsToUser(accountId, userId);
   if (toAccountId) await assertAccountBelongsToUser(toAccountId, userId);
 
   const deltas = getBalanceDeltas(type, amount, accountId, toAccountId);
 
   return prisma.$transaction(async (tx) => {
-    // Crear la transacción
+    // Create the transaction
     const transaction = await tx.transaction.create({
       data: { accountId, categoryId, toAccountId, amount, type, description, date, notes },
       include: { account: true, category: true },
     });
 
-    // Actualizar balances
+    // Update balances
     for (const { id, delta } of deltas) {
       await tx.account.update({
         where: { id },
@@ -118,17 +118,17 @@ async function createTransaction(userId, data) {
 }
 
 /**
- * Edita una transacción.
- * Revierte el efecto original en el balance y aplica el nuevo.
+ * Edits a transaction.
+ * Reverts the original balance effect and applies the new one.
  */
-async function updateTransaction(id, userId, data) {
+export async function updateTransaction(id, userId, data) {
   const existing = await prisma.transaction.findUnique({
     where: { id },
     include: { account: true },
   });
   assertOwnership(existing, userId);
 
-  // Si cambia la cuenta o to-account, validar ownership
+  // If account or to-account changes, validate ownership
   const newAccountId   = data.accountId   ?? existing.accountId;
   const newToAccountId = data.toAccountId ?? existing.toAccountId;
   if (data.accountId)   await assertAccountBelongsToUser(data.accountId, userId);
@@ -137,7 +137,7 @@ async function updateTransaction(id, userId, data) {
   const newAmount = data.amount ?? Number(existing.amount);
   const newType   = data.type   ?? existing.type;
 
-  // Deltas para revertir el estado actual
+  // Deltas to revert current state
   const reverseDeltas = getBalanceDeltas(
     existing.type,
     Number(existing.amount),
@@ -145,7 +145,7 @@ async function updateTransaction(id, userId, data) {
     existing.toAccountId
   ).map(({ id: accId, delta }) => ({ id: accId, delta: -delta }));
 
-  // Deltas para aplicar el nuevo estado
+  // Deltas to apply new state
   const forwardDeltas = getBalanceDeltas(newType, newAmount, newAccountId, newToAccountId);
 
   return prisma.$transaction(async (tx) => {
@@ -176,9 +176,9 @@ async function updateTransaction(id, userId, data) {
 }
 
 /**
- * Elimina una transacción y revierte su efecto en el balance.
+ * Deletes a transaction and reverts its balance effect.
  */
-async function deleteTransaction(id, userId) {
+export async function deleteTransaction(id, userId) {
   const existing = await prisma.transaction.findUnique({
     where: { id },
     include: { account: true },
@@ -203,11 +203,3 @@ async function deleteTransaction(id, userId) {
     }
   });
 }
-
-module.exports = {
-  getTransactions,
-  getTransactionById,
-  createTransaction,
-  updateTransaction,
-  deleteTransaction,
-};

@@ -1,11 +1,11 @@
-const jwt = require('jsonwebtoken');
-const redis = require('../config/redis');
-const { JWT_SECRET } = require('../config/env');
+import jwt from 'jsonwebtoken';
+import redis from '../config/redis.js';
+import { JWT_SECRET } from '../config/env.js';
 
 /**
- * Verifica el access token JWT en el header Authorization.
- * Adjunta req.user = { id, email } si es válido.
- * Rechaza tokens que estén en la blacklist de Redis (logout).
+ * Verifies the JWT access token in the Authorization header.
+ * Attaches req.user = { id, email } if valid.
+ * Rejects tokens that are in the Redis blacklist (logout).
  */
 async function authMiddleware(req, res, next) {
   try {
@@ -20,7 +20,7 @@ async function authMiddleware(req, res, next) {
 
     const token = authHeader.split(' ')[1];
 
-    // Verificar si el token fue invalidado (logout)
+    // Check if the token was invalidated (logout)
     const blacklisted = await redis.get(`blacklist:${token}`);
     if (blacklisted) {
       return res.status(401).json({
@@ -31,7 +31,7 @@ async function authMiddleware(req, res, next) {
 
     const payload = jwt.verify(token, JWT_SECRET);
     req.user = { id: payload.sub, email: payload.email };
-    req.token = token; // útil para logout
+    req.token = token; // useful for logout
 
     next();
   } catch (err) {
@@ -48,4 +48,4 @@ async function authMiddleware(req, res, next) {
   }
 }
 
-module.exports = authMiddleware;
+export default authMiddleware;

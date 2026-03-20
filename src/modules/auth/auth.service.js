@@ -1,18 +1,18 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const prisma = require('../../config/prisma');
-const redis = require('../../config/redis');
-const {
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import prisma from '../../config/prisma.js';
+import redis from '../../config/redis.js';
+import {
   JWT_SECRET,
   JWT_REFRESH_SECRET,
   JWT_ACCESS_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_IN,
-} = require('../../config/env');
+} from '../../config/env.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
- * Convierte "15m", "7d", etc. a segundos para Redis TTL.
+ * Converts "15m", "7d", etc. to seconds for Redis TTL.
  */
 function parseDurationToSeconds(duration) {
   const match = duration.match(/^(\d+)([smhd])$/);
@@ -40,7 +40,7 @@ function generateRefreshToken(user) {
 
 // ─── Service functions ────────────────────────────────────────────────────────
 
-async function register({ name, email, password, currency }) {
+export async function register({ name, email, password, currency }) {
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
     const err = new Error('Ya existe una cuenta con ese email');
@@ -58,14 +58,14 @@ async function register({ name, email, password, currency }) {
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
-  // Guardar refresh token en Redis: refresh:<userId> → token
+  // Store refresh token in Redis: refresh:<userId> → token
   const refreshTTL = parseDurationToSeconds(JWT_REFRESH_EXPIRES_IN);
   await redis.setex(`refresh:${user.id}`, refreshTTL, refreshToken);
 
   return { user, accessToken, refreshToken };
 }
 
-async function login({ email, password }) {
+export async function login({ email, password }) {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (!user) {
@@ -91,7 +91,7 @@ async function login({ email, password }) {
   return { user: safeUser, accessToken, refreshToken };
 }
 
-async function refreshAccessToken(refreshToken) {
+export async function refreshAccessToken(refreshToken) {
   let payload;
   try {
     payload = jwt.verify(refreshToken, JWT_REFRESH_SECRET);
@@ -101,7 +101,7 @@ async function refreshAccessToken(refreshToken) {
     throw err;
   }
 
-  // Validar que el token almacenado en Redis coincida (single-session)
+  // Validate that the stored token in Redis matches (single-session)
   const stored = await redis.get(`refresh:${payload.sub}`);
   if (!stored || stored !== refreshToken) {
     const err = new Error('Refresh token inválido o ya fue usado');
@@ -124,23 +124,21 @@ async function refreshAccessToken(refreshToken) {
   return { accessToken: newAccessToken };
 }
 
-async function logout(accessToken, userId) {
-  // Obtener el TTL restante del access token para usarlo en Redis
+export async function logout(accessToken, userId) {
+  // Get remaining TTL of access token to use in Redis
   let ttl = parseDurationToSeconds(JWT_ACCESS_EXPIRES_IN);
   try {
     const decoded = jwt.decode(accessToken);
     if (decoded?.exp) {
       ttl = Math.max(0, decoded.exp - Math.floor(Date.now() / 1000));
     }
-  } catch { /* ignorar */ }
+  } catch { /* ignore */ }
 
-  // Blacklist el access token hasta que expire naturalmente
+  // Blacklist the access token until it naturally expires
   if (ttl > 0) {
     await redis.setex(`blacklist:${accessToken}`, ttl, '1');
   }
 
-  // Eliminar el refresh token del usuario
+  // Remove the user's refresh token
   await redis.del(`refresh:${userId}`);
 }
-
-module.exports = { register, login, refreshAccessToken, logout };

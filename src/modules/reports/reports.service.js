@@ -1,4 +1,4 @@
-const prisma = require('../../config/prisma');
+import prisma from '../../config/prisma.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -12,9 +12,9 @@ function currentMonthRange() {
 // ─── Report functions ─────────────────────────────────────────────────────────
 
 /**
- * Balance total de todas las cuentas + ingresos/gastos del mes actual.
+ * Total balance of all accounts + income/expenses for the current month.
  */
-async function getSummary(userId) {
+export async function getSummary(userId) {
   const { start, end } = currentMonthRange();
 
   const [accounts, incomeAgg, expenseAgg] = await Promise.all([
@@ -58,13 +58,13 @@ async function getSummary(userId) {
 }
 
 /**
- * Gastos agrupados por categoría en un rango de fechas.
+ * Expenses grouped by category within a date range.
  */
-async function getByCategory(userId, { dateFrom, dateTo }) {
+export async function getByCategory(userId, { dateFrom, dateTo }) {
   const from = dateFrom ? new Date(dateFrom) : new Date(currentMonthRange().start);
   const to   = dateTo   ? new Date(dateTo)   : new Date(currentMonthRange().end);
 
-  // Obtener totales por categoría
+  // Get totals by category
   const grouped = await prisma.transaction.groupBy({
     by: ['categoryId'],
     _sum: { amount: true },
@@ -78,7 +78,7 @@ async function getByCategory(userId, { dateFrom, dateTo }) {
 
   if (!grouped.length) return { categories: [], total: 0, from, to };
 
-  // Enriquecer con datos de categoría
+  // Enrich with category data
   const categoryIds = grouped.map((g) => g.categoryId);
   const categories  = await prisma.category.findMany({
     where: { id: { in: categoryIds } },
@@ -101,13 +101,13 @@ async function getByCategory(userId, { dateFrom, dateTo }) {
 }
 
 /**
- * Ingresos vs gastos de los últimos 6 meses.
+ * Income vs expenses for the last 6 months.
  */
-async function getMonthlyTrend(userId) {
+export async function getMonthlyTrend(userId) {
   const months = [];
   const now = new Date();
 
-  // Construir rango de los últimos 6 meses
+  // Build range for last 6 months
   for (let i = 5; i >= 0; i--) {
     const d     = new Date(now.getFullYear(), now.getMonth() - i, 1);
     const start = new Date(d.getFullYear(), d.getMonth(), 1);
@@ -139,9 +139,9 @@ async function getMonthlyTrend(userId) {
 }
 
 /**
- * Balance actual de cada cuenta activa del usuario.
+ * Current balance of each active account for the user.
  */
-async function getAccountBalances(userId) {
+export async function getAccountBalances(userId) {
   const accounts = await prisma.account.findMany({
     where: { userId, isActive: true },
     select: { id: true, name: true, type: true, balance: true, color: true, currency: false },
@@ -155,5 +155,3 @@ async function getAccountBalances(userId) {
     total,
   };
 }
-
-module.exports = { getSummary, getByCategory, getMonthlyTrend, getAccountBalances };

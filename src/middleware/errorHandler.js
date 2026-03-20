@@ -1,7 +1,7 @@
-const { NODE_ENV } = require('../config/env');
+import { NODE_ENV } from '../config/env.js';
 
 /**
- * Mapea códigos de error de Prisma a HTTP status codes apropiados.
+ * Maps Prisma error codes to appropriate HTTP status codes.
  */
 function getPrismaHttpStatus(code) {
   const map = {
@@ -14,13 +14,13 @@ function getPrismaHttpStatus(code) {
 }
 
 /**
- * Middleware global de manejo de errores.
- * Debe registrarse ÚLTIMO en Express.
+ * Global error handling middleware.
+ * Must be registered LAST in Express.
  */
 function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
   console.error(`[ERROR] ${req.method} ${req.path}:`, err.message);
 
-  // Errores de validación de Zod (lanzados desde validate middleware)
+  // Zod validation errors (thrown from validate middleware)
   if (err.name === 'ZodValidationError') {
     return res.status(400).json({
       success: false,
@@ -29,7 +29,7 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
     });
   }
 
-  // Errores de Prisma
+  // Prisma errors
   if (err.code && err.code.startsWith('P')) {
     const status = getPrismaHttpStatus(err.code);
     let message = 'Error de base de datos';
@@ -44,7 +44,7 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
     return res.status(status).json({ success: false, message });
   }
 
-  // Errores con status HTTP explícito (lanzados con new Error() + err.statusCode)
+  // Errors with explicit HTTP status (thrown with new Error() + err.statusCode)
   if (err.statusCode) {
     return res.status(err.statusCode).json({
       success: false,
@@ -52,7 +52,7 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
     });
   }
 
-  // Error genérico
+  // Generic error
   const status = err.status || 500;
   return res.status(status).json({
     success: false,
@@ -61,4 +61,4 @@ function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-va
   });
 }
 
-module.exports = errorHandler;
+export default errorHandler;

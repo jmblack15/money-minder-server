@@ -1,6 +1,6 @@
 /**
- * Factory de middleware para validar req.body con un schema de Zod.
- * Uso: router.post('/ruta', validate(myZodSchema), controller)
+ * Middleware factory to validate req.body with a Zod schema.
+ * Usage: router.post('/route', validate(myZodSchema), controller)
  */
 function validate(schema) {
   return (req, res, next) => {
@@ -16,10 +16,10 @@ function validate(schema) {
       return next(err);
     }
 
-    // Reemplaza req.body con los datos parseados/coercionados por Zod
+    // Replace req.body with Zod-parsed/coerced data
     req.body = result.data;
     next();
   };
 }
 
-module.exports = validate;
+export default validate;

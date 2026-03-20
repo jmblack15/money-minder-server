@@ -1,6 +1,6 @@
-const { z } = require('zod');
+import { z } from 'zod';
 
-const registerSchema = z.object({
+export const registerSchema = z.object({
   name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100),
   email: z.string().email('Email inválido').toLowerCase(),
   password: z
@@ -10,13 +10,11 @@ const registerSchema = z.object({
   currency: z.string().length(3).toUpperCase().optional().default('COP'),
 });
 
-const loginSchema = z.object({
+export const loginSchema = z.object({
   email: z.string().email('Email inválido').toLowerCase(),
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
-const refreshSchema = z.object({
+export const refreshSchema = z.object({
   refreshToken: z.string().min(1, 'El refresh token es requerido'),
 });
-
-module.exports = { registerSchema, loginSchema, refreshSchema };
