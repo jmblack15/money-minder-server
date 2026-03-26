@@ -6,7 +6,8 @@ import cors    from 'cors';
 import morgan  from 'morgan';
 import rateLimit from 'express-rate-limit';
 
-import errorHandler  from './middleware/errorHandler.js';
+import passport       from './config/passport.js';
+import errorHandler   from './middleware/errorHandler.js';
 import authMiddleware from './middleware/authMiddleware.js';
 
 // ── Routes ────────────────────────────────────────────────────────────────────
@@ -23,6 +24,7 @@ import { PORT, NODE_ENV } from './config/env.js';
 const app = express();
 
 // ── Security and global utilities ─────────────────────────────────────────────
+app.use(passport.initialize());
 app.use(helmet());
 app.use(cors({
   origin: '*', // In production, restrict to specific domains
@@ -57,13 +59,16 @@ app.get('/health', (req, res) => {
 // ── Public routes ─────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 
-// ── Protected routes (require JWT) ────────────────────────────────────────────
-app.use('/api/accounts',     authMiddleware, accountsRoutes);
-app.use('/api/categories',   authMiddleware, categoriesRoutes);
-app.use('/api/transactions', authMiddleware, transactionsRoutes);
-app.use('/api/budgets',      authMiddleware, budgetsRoutes);
-app.use('/api/savings',      authMiddleware, savingsRoutes);
-app.use('/api/reports',      authMiddleware, reportsRoutes);
+// ── Protected routes (JWT guard applied once for all) ─────────────────────────
+const protectedRouter = express.Router();
+protectedRouter.use(authMiddleware);
+protectedRouter.use('/accounts',     accountsRoutes);
+protectedRouter.use('/categories',   categoriesRoutes);
+protectedRouter.use('/transactions', transactionsRoutes);
+protectedRouter.use('/budgets',      budgetsRoutes);
+protectedRouter.use('/savings',      savingsRoutes);
+protectedRouter.use('/reports',      reportsRoutes);
+app.use('/api', protectedRouter);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
