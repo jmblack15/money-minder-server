@@ -9,7 +9,7 @@ const options = {
       description: 'API REST de finanzas personales',
     },
     servers: [
-      { url: 'http://localhost:3000', description: 'Desarrollo' },
+      { url: 'http://localhost:3000/api/v1', description: 'Desarrollo' },
     ],
     components: {
       securitySchemes: {

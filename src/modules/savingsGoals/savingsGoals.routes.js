@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/savings:
+ * /savings:
  *   get:
  *     tags: [Savings Goals]
  *     summary: Listar metas de ahorro con porcentaje de progreso
@@ -38,7 +38,7 @@ router.get('/', controller.getGoals);
 
 /**
  * @swagger
- * /api/savings/{id}:
+ * /savings/{id}:
  *   get:
  *     tags: [Savings Goals]
  *     summary: Obtener detalle de una meta de ahorro
@@ -70,7 +70,7 @@ router.get('/:id', controller.getGoal);
 
 /**
  * @swagger
- * /api/savings:
+ * /savings:
  *   post:
  *     tags: [Savings Goals]
  *     summary: Crear una meta de ahorro
@@ -117,7 +117,7 @@ router.post('/', validate(createGoalSchema), controller.createGoal);
 
 /**
  * @swagger
- * /api/savings/{id}:
+ * /savings/{id}:
  *   put:
  *     tags: [Savings Goals]
  *     summary: Editar una meta o actualizar su monto acumulado
@@ -172,7 +172,7 @@ router.put('/:id', validate(updateGoalSchema), controller.updateGoal);
 
 /**
  * @swagger
- * /api/savings/{id}:
+ * /savings/{id}:
  *   delete:
  *     tags: [Savings Goals]
  *     summary: Eliminar una meta de ahorro

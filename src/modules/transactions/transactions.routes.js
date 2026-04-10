@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/transactions:
+ * /transactions:
  *   get:
  *     tags: [Transactions]
  *     summary: Listar transacciones con filtros opcionales
@@ -80,7 +80,7 @@ router.get('/', controller.getTransactions);
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /transactions/{id}:
  *   get:
  *     tags: [Transactions]
  *     summary: Obtener detalle de una transacción
@@ -112,7 +112,7 @@ router.get('/:id', controller.getTransaction);
 
 /**
  * @swagger
- * /api/transactions:
+ * /transactions:
  *   post:
  *     tags: [Transactions]
  *     summary: Crear una transacción (actualiza el balance de la cuenta)
@@ -174,7 +174,7 @@ router.post('/', validate(createTransactionSchema), controller.createTransaction
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /transactions/{id}:
  *   put:
  *     tags: [Transactions]
  *     summary: Editar una transacción (recalcula balances)
@@ -242,7 +242,7 @@ router.put('/:id', validate(updateTransactionSchema), controller.updateTransacti
 
 /**
  * @swagger
- * /api/transactions/{id}:
+ * /transactions/{id}:
  *   delete:
  *     tags: [Transactions]
  *     summary: Eliminar una transacción (revierte el balance)

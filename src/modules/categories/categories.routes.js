@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/categories:
+ * /categories:
  *   get:
  *     tags: [Categories]
  *     summary: Listar categorías globales y propias del usuario
@@ -32,7 +32,7 @@ router.get('/', controller.getCategories);
 
 /**
  * @swagger
- * /api/categories:
+ * /categories:
  *   post:
  *     tags: [Categories]
  *     summary: Crear una categoría personalizada
@@ -79,7 +79,7 @@ router.post('/', validate(createCategorySchema), controller.createCategory);
 
 /**
  * @swagger
- * /api/categories/{id}:
+ * /categories/{id}:
  *   put:
  *     tags: [Categories]
  *     summary: Editar una categoría propia
@@ -136,7 +136,7 @@ router.put('/:id', validate(updateCategorySchema), controller.updateCategory);
 
 /**
  * @swagger
- * /api/categories/{id}:
+ * /categories/{id}:
  *   delete:
  *     tags: [Categories]
  *     summary: Eliminar una categoría propia

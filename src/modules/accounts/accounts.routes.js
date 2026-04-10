@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/accounts:
+ * /accounts:
  *   get:
  *     tags: [Accounts]
  *     summary: Listar cuentas del usuario
@@ -32,7 +32,7 @@ router.get('/', controller.getAccounts);
 
 /**
  * @swagger
- * /api/accounts/{id}:
+ * /accounts/{id}:
  *   get:
  *     tags: [Accounts]
  *     summary: Obtener detalle de una cuenta
@@ -64,7 +64,7 @@ router.get('/:id', controller.getAccount);
 
 /**
  * @swagger
- * /api/accounts:
+ * /accounts:
  *   post:
  *     tags: [Accounts]
  *     summary: Crear una cuenta
@@ -112,7 +112,7 @@ router.post('/', validate(createAccountSchema), controller.createAccount);
 
 /**
  * @swagger
- * /api/accounts/{id}:
+ * /accounts/{id}:
  *   put:
  *     tags: [Accounts]
  *     summary: Editar una cuenta
@@ -165,7 +165,7 @@ router.put('/:id', validate(updateAccountSchema), controller.updateAccount);
 
 /**
  * @swagger
- * /api/accounts/{id}:
+ * /accounts/{id}:
  *   delete:
  *     tags: [Accounts]
  *     summary: Desactivar una cuenta (soft delete)

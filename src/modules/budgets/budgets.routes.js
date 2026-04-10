@@ -7,7 +7,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/budgets:
+ * /budgets:
  *   get:
  *     tags: [Budgets]
  *     summary: Listar presupuestos con gasto actual del período
@@ -41,7 +41,7 @@ router.get('/', controller.getBudgets);
 
 /**
  * @swagger
- * /api/budgets/{id}:
+ * /budgets/{id}:
  *   get:
  *     tags: [Budgets]
  *     summary: Obtener detalle de un presupuesto con spending
@@ -80,7 +80,7 @@ router.get('/:id', controller.getBudget);
 
 /**
  * @swagger
- * /api/budgets:
+ * /budgets:
  *   post:
  *     tags: [Budgets]
  *     summary: Crear un presupuesto
@@ -133,7 +133,7 @@ router.post('/', validate(createBudgetSchema), controller.createBudget);
 
 /**
  * @swagger
- * /api/budgets/{id}:
+ * /budgets/{id}:
  *   put:
  *     tags: [Budgets]
  *     summary: Editar un presupuesto
@@ -186,7 +186,7 @@ router.put('/:id', validate(updateBudgetSchema), controller.updateBudget);
 
 /**
  * @swagger
- * /api/budgets/{id}:
+ * /budgets/{id}:
  *   delete:
  *     tags: [Budgets]
  *     summary: Eliminar un presupuesto

@@ -5,7 +5,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/reports/summary:
+ * /reports/summary:
  *   get:
  *     tags: [Reports]
  *     summary: Balance total e ingresos/gastos del mes actual
@@ -38,7 +38,7 @@ router.get('/summary', controller.summary);
 
 /**
  * @swagger
- * /api/reports/by-category:
+ * /reports/by-category:
  *   get:
  *     tags: [Reports]
  *     summary: Gastos agrupados por categoría en un rango de fechas
@@ -86,7 +86,7 @@ router.get('/by-category', controller.byCategory);
 
 /**
  * @swagger
- * /api/reports/monthly-trend:
+ * /reports/monthly-trend:
  *   get:
  *     tags: [Reports]
  *     summary: Ingresos vs gastos de los últimos 6 meses
@@ -119,7 +119,7 @@ router.get('/monthly-trend', controller.monthlyTrend);
 
 /**
  * @swagger
- * /api/reports/account-balances:
+ * /reports/account-balances:
  *   get:
  *     tags: [Reports]
  *     summary: Balance actual de cada cuenta activa

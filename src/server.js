@@ -59,11 +59,11 @@ app.get('/health', (req, res) => {
 });
 
 // ── Swagger docs ───────────────────────────────────────────────────────────────
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.get('/api/docs.json', (_req, res) => res.json(swaggerSpec));
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/v1/docs.json', (_req, res) => res.json(swaggerSpec));
 
 // ── Public routes ─────────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 // ── Protected routes (JWT guard applied once for all) ─────────────────────────
 const protectedRouter = express.Router();
@@ -74,7 +74,7 @@ protectedRouter.use('/transactions', transactionsRoutes);
 protectedRouter.use('/budgets',      budgetsRoutes);
 protectedRouter.use('/savings',      savingsRoutes);
 protectedRouter.use('/reports',      reportsRoutes);
-app.use('/api', protectedRouter);
+app.use('/api/v1', protectedRouter);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {

@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /api/auth/register:
+ * /auth/register:
  *   post:
  *     tags: [Auth]
  *     summary: Registrar nuevo usuario
@@ -75,7 +75,7 @@ router.post('/register', validate(registerSchema), controller.register);
 
 /**
  * @swagger
- * /api/auth/login:
+ * /auth/login:
  *   post:
  *     tags: [Auth]
  *     summary: Iniciar sesión
@@ -125,7 +125,7 @@ router.post('/login', validate(loginSchema), controller.login);
 
 /**
  * @swagger
- * /api/auth/refresh:
+ * /auth/refresh:
  *   post:
  *     tags: [Auth]
  *     summary: Renovar access token
@@ -167,7 +167,7 @@ router.post('/refresh', validate(refreshSchema), controller.refresh);
 
 /**
  * @swagger
- * /api/auth/logout:
+ * /auth/logout:
  *   post:
  *     tags: [Auth]
  *     summary: Cerrar sesión e invalidar tokens
