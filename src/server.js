@@ -9,6 +9,8 @@ import rateLimit from 'express-rate-limit';
 import passport       from './config/passport.js';
 import errorHandler   from './middleware/errorHandler.js';
 import authMiddleware from './middleware/authMiddleware.js';
+import swaggerUi      from 'swagger-ui-express';
+import { swaggerSpec } from './config/swagger.js';
 
 // ── Routes ────────────────────────────────────────────────────────────────────
 import authRoutes         from './modules/auth/auth.routes.js';
@@ -27,7 +29,7 @@ const app = express();
 app.use(passport.initialize());
 app.use(helmet());
 app.use(cors({
-  origin: '*', // In production, restrict to specific domains
+  origin: '*', 
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
@@ -56,8 +58,12 @@ app.get('/health', (req, res) => {
   res.json({ success: true, message: 'Money Minder API is running', timestamp: new Date() });
 });
 
+// ── Swagger docs ───────────────────────────────────────────────────────────────
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/v1/docs.json', (_req, res) => res.json(swaggerSpec));
+
 // ── Public routes ─────────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 
 // ── Protected routes (JWT guard applied once for all) ─────────────────────────
 const protectedRouter = express.Router();
@@ -68,7 +74,7 @@ protectedRouter.use('/transactions', transactionsRoutes);
 protectedRouter.use('/budgets',      budgetsRoutes);
 protectedRouter.use('/savings',      savingsRoutes);
 protectedRouter.use('/reports',      reportsRoutes);
-app.use('/api', protectedRouter);
+app.use('/api/v1', protectedRouter);
 
 // ── 404 ───────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
