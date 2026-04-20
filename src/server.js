@@ -37,6 +37,11 @@ app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// ── Health check ──────────────────────────────────────────────────────────────
+app.get('/health', (req, res) => {
+  res.json({ success: true, message: 'Money Minder API is running', timestamp: new Date() });
+});
+
 // Global rate limiting: 200 req/15min per IP
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -47,16 +52,11 @@ app.use(rateLimit({
 }));
 
 // Strict rate limiting for auth: 20 req/15min per IP
-app.use('/api/auth', rateLimit({
+app.use('/api/v1/auth', rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
   message: { success: false, message: 'Demasiados intentos de autenticación.' },
 }));
-
-// ── Health check ──────────────────────────────────────────────────────────────
-app.get('/health', (req, res) => {
-  res.json({ success: true, message: 'Money Minder API is running', timestamp: new Date() });
-});
 
 // ── Swagger docs ───────────────────────────────────────────────────────────────
 app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
